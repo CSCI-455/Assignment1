@@ -1,4 +1,4 @@
-package Proxy;
+package assignment1;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -13,6 +13,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import assignment1.RequestHandler;
 
 public class ProxyServer {
     //cache is a Map: the key is the URL and the value is the file name of the file that stores the cached content
@@ -35,7 +37,16 @@ public class ProxyServer {
 		if (!cacheDir.exists() || (cacheDir.exists() && !cacheDir.isDirectory())) {
 			cacheDir.mkdirs();
 		}
-
+		try{
+		proxySocket = new ServerSocket(proxyPort);
+		
+			while (true) {
+				RequestHandler request = new RequestHandler(proxySocket.accept(), this);
+			}
+		}
+		catch(IOException exp){
+			System.out.println("dfjk");
+		}
 		/**
 			 * To do:
 			 * create a serverSocket to listen on the port (proxyPort)
@@ -58,7 +69,19 @@ public class ProxyServer {
 	}
 
 	public synchronized void writeLog(String info) {
-		
+		try{
+		File log = new File("logFileName");
+			if(log.exists() == false){
+				log.createNewFile();
+			}
+		FileWriter logfile = new FileWriter(log);
+		String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
+		logfile.append(info + " " + timeStamp);
+		logfile.close();
+		}
+		catch(IOException exp){
+			System.out.print("fdjksdfjklfdkjls");
+		}
 			/**
 			 * To do
 			 * write string (info) to the log file, and add the current time stamp 
