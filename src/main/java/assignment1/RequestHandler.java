@@ -64,7 +64,7 @@ public class RequestHandler extends Thread {
 	private void proxyServertoClient(byte[] clientRequest) {
 
 		FileOutputStream fileWriter = null;
-		Socket toWebServerSocket = null;
+		Socket toWebServerSocket;
 		InputStream inFromServer;
 		OutputStream outToServer;
 		
@@ -74,7 +74,26 @@ public class RequestHandler extends Thread {
 		// to handle binary content, byte is used
 		byte[] serverReply = new byte[4096];
 		
-			
+		try
+		{
+			URL current = new URL(clientRequest.toString());
+			toWebServerSocket = new Socket(current.getHost(), current.getPort());
+			inFromServer = toWebServerSocket.getInputStream();
+			outToServer = toWebServerSocket.getOutputStream();
+			outToServer.flush();
+		}
+		catch (IOException ex)
+		{
+			if (ex instanceof MalformedURLException)
+			{
+				System.out.println("Invalid URL");
+			}
+			else if (ex instanceof UnknownHostException)
+			{
+				System.out.println("The host is unknown.");
+			}
+			ex.printStackTrace();
+		}
 		/**
 		 * To do
 		 * (1) Create a socket to connect to the web server (default port 80)
