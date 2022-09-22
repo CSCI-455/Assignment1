@@ -1,4 +1,4 @@
-package Proxy;
+package assignment1;
 
 import java.io.*;
 import java.net.*;
