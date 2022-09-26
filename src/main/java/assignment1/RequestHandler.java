@@ -47,7 +47,18 @@ public class RequestHandler extends Thread {
 	@Override
 	
 	public void run() {
-
+		try {
+			String requeststring = new BufferedReader(new InputStreamReader(inFromClient)).readLine();
+			if(requeststring.substring(0, 3).equalsIgnoreCase("Get"))
+			{
+				if(server.getCache(requeststring) != null)
+					server.writeLog(server.getCache(requeststring));
+				else
+					proxyServertoClient(request);
+			}
+		} catch(Exception e){
+			e.printStackTrace();
+		}
 		/**
 			 * To do
 			 * Process the requests from a client. In particular, 

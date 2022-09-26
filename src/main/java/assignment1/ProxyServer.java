@@ -37,16 +37,18 @@ public class ProxyServer {
 		if (!cacheDir.exists() || (cacheDir.exists() && !cacheDir.isDirectory())) {
 			cacheDir.mkdirs();
 		}
-		try{
-		proxySocket = new ServerSocket(proxyPort);
 		
-			while (true) {
+		while (true) {
+			try{
+				proxySocket = new ServerSocket(proxyPort);
 				RequestHandler request = new RequestHandler(proxySocket.accept(), this);
+				request.start();
+			}
+			catch(IOException exp){
+				exp.printStackTrace();
 			}
 		}
-		catch(IOException exp){
-			System.out.println("dfjk");
-		}
+		
 		/**
 			 * To do:
 			 * create a serverSocket to listen on the port (proxyPort)
@@ -80,7 +82,7 @@ public class ProxyServer {
 		logfile.close();
 		}
 		catch(IOException exp){
-			System.out.print("fdjksdfjklfdkjls");
+			exp.printStackTrace();;
 		}
 			/**
 			 * To do
