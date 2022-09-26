@@ -87,11 +87,20 @@ public class RequestHandler extends Thread {
 		
 		try
 		{
-			URL current = new URL(clientRequest.toString());
-			toWebServerSocket = new Socket(current.getHost(), current.getPort());
+			//URL url = new URL(requestUrl);
+			toWebServerSocket = new Socket(url.getHost(), url.getPort());
 			inFromServer = toWebServerSocket.getInputStream();
 			outToServer = toWebServerSocket.getOutputStream();
-			outToServer.flush();
+			outToServer.write(clientRequest);
+			while (true)
+			{
+				inFromServer.read(serverReply);
+				//fileWriter = new FileOutputStream();
+			}
+			BufferedReader requestURLReader = new BufferedReader(new InputStreamReader(inFromClient));
+			String requestUrl = requestURLReader.readLine();
+			server.putCache(requestUrl, fileName);
+			toWebServerSocket.close();
 		}
 		catch (IOException ex)
 		{
