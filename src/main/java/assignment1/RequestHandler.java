@@ -47,12 +47,21 @@ public class RequestHandler extends Thread {
 	@Override
 	
 	public void run() {
-		try {
-			String requeststring = new BufferedReader(new InputStreamReader(inFromClient)).readLine();
-			if(requeststring.substring(0, 3).equalsIgnoreCase("Get"))
+		try{	
+			inFromClient.read(request);
+			String requeststring = new String(request);
+			String arrayString[] = requeststring.split(" ");
+			String get = arrayString[0];
+			String urlstring = arrayString[1];
+			server.writeLog(urlstring);
+
+
+			if(get.equalsIgnoreCase("Get"))
 			{
-				if(server.getCache(requeststring) != null)
-					server.writeLog(server.getCache(requeststring));
+				if(server.getCache(urlstring) != null)
+				{
+					sendCachedInfoToClient(server.getCache(urlstring));
+				}
 				else
 					proxyServertoClient(request);
 			}
@@ -87,8 +96,8 @@ public class RequestHandler extends Thread {
 		
 		try
 		{
-			//URL url = new URL(requestUrl);
-			toWebServerSocket = new Socket(url.getHost(), url.getPort());
+			//URL url = new URL();
+			toWebServerSocket = new Socket();
 			inFromServer = toWebServerSocket.getInputStream();
 			outToServer = toWebServerSocket.getOutputStream();
 			outToServer.write(clientRequest);
@@ -104,15 +113,7 @@ public class RequestHandler extends Thread {
 		}
 		catch (IOException ex)
 		{
-			if (ex instanceof MalformedURLException)
-			{
-				System.out.println("Invalid URL");
-			}
-			else if (ex instanceof UnknownHostException)
-			{
-				System.out.println("The host is unknown.");
-			}
-			ex.printStackTrace();
+
 		}
 		/**
 		 * To do

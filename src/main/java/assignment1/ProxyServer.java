@@ -72,13 +72,9 @@ public class ProxyServer {
 
 	public synchronized void writeLog(String info) {
 		try{
-		File log = new File("logFileName");
-			if(log.exists() == false){
-				log.createNewFile();
-			}
-		FileWriter logfile = new FileWriter(log);
+		FileWriter logfile = new FileWriter(logFileName, true);
 		String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
-		logfile.append(info + " " + timeStamp);
+		logfile.append(info + " " + timeStamp + '\n');
 		logfile.close();
 		}
 		catch(IOException exp){
