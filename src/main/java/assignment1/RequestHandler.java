@@ -53,8 +53,7 @@ public class RequestHandler extends Thread {
 			String arrayString[] = requeststring.split(" ");
 			String get = arrayString[0];
 			String urlstring = arrayString[1];
-			server.writeLog(urlstring);
-
+			server.writeLog(clientSocket.getInetAddress().getHostAddress() + " " + urlstring);
 
 			if(get.equalsIgnoreCase("Get"))
 			{

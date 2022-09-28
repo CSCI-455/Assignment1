@@ -74,7 +74,7 @@ public class ProxyServer {
 		try{
 		FileWriter logfile = new FileWriter(logFileName, true);
 		String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
-		logfile.append(info + " " + timeStamp + '\n');
+		logfile.append(timeStamp + " " + info + '\n');
 		logfile.close();
 		}
 		catch(IOException exp){
