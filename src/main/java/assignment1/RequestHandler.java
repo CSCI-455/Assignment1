@@ -4,23 +4,16 @@ import java.io.*;
 import java.net.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.security.MessageDigest;
 import java.security.SecureRandom;
 
 
 // RequestHandler is thread that process requests of one client connection
-public class RequestHandler extends Thread {
-
-	
+public class RequestHandler extends Thread 
+{
 	Socket clientSocket;
-
 	InputStream inFromClient;
-
 	OutputStream outToClient;
-	
 	byte[] request = new byte[1024];
-
-	
 	private ProxyServer server;
 
 
@@ -45,22 +38,16 @@ public class RequestHandler extends Thread {
 
 	
 	@Override
-	
 	public void run() {
 		try{	
 			inFromClient.read(request);
-			String requeststring = new String(request);
-			String arrayString[] = requeststring.split(" ");
-			String get = arrayString[0];
-			String urlstring = arrayString[1];
-			server.writeLog(urlstring);
-
-
-			if(get.equalsIgnoreCase("Get"))
+			URLResponse result = new URLResponse(request);
+			server.writeLog(result.getURLString());
+			if(result.getHttpMethod().equalsIgnoreCase("Get"))
 			{
-				if(server.getCache(urlstring) != null)
+				if(server.getCache(result.getURLString()) != null)
 				{
-					sendCachedInfoToClient(server.getCache(urlstring));
+					sendCachedInfoToClient(server.getCache(result.getURLString()));
 				}
 				else
 					proxyServertoClient(request);
@@ -77,9 +64,7 @@ public class RequestHandler extends Thread {
 			 * (4) Otherwise, call method proxyServertoClient to process the GET request
 			 *
 		*/
-
 	}
-
 	
 	private void proxyServertoClient(byte[] clientRequest) {
 
@@ -97,23 +82,16 @@ public class RequestHandler extends Thread {
 		try
 		{
 			//URL url = new URL();
-			toWebServerSocket = new Socket();
+			URLResponse result = new URLResponse(clientRequest);
+			toWebServerSocket = new Socket(result.getURLString(), 80);
 			inFromServer = toWebServerSocket.getInputStream();
 			outToServer = toWebServerSocket.getOutputStream();
 			outToServer.write(clientRequest);
-			while (true)
-			{
-				inFromServer.read(serverReply);
-				//fileWriter = new FileOutputStream();
-			}
-			BufferedReader requestURLReader = new BufferedReader(new InputStreamReader(inFromClient));
-			String requestUrl = requestURLReader.readLine();
-			server.putCache(requestUrl, fileName);
-			toWebServerSocket.close();
+			outToServer.flush();
 		}
-		catch (IOException ex)
+		catch (Exception ex)
 		{
-
+			System.out.println(ex.getMessage());
 		}
 		/**
 		 * To do
