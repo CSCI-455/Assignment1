@@ -40,18 +40,21 @@ public class RequestHandler extends Thread
 	@Override
 	public void run() {
 		try{	
-			inFromClient.read(request);
-			String requeststring = new String(request);
+			int num_byte = inFromClient.read(request);
+			String requeststring = new String(request, 0, num_byte);
 			String arrayString[] = requeststring.split(" ");
 			String get = arrayString[0];
-			String urlstring = arrayString[1];
+			String urlstring = "";
 			server.writeLog(clientSocket.getInetAddress().getHostAddress() + " " + urlstring);
 
 			if(get.equalsIgnoreCase("Get"))
 			{
-				if(server.getCache(result.getURLString()) != null)
+			System.out.println(requeststring);
+
+				if(server.getCache(urlstring) != null)
 				{
-					sendCachedInfoToClient(server.getCache(result.getURLString()));
+					System.out.println(urlstring);
+					sendCachedInfoToClient(server.getCache(urlstring));
 				}
 				else
 					proxyServertoClient(request);
@@ -85,13 +88,27 @@ public class RequestHandler extends Thread
 		
 		try
 		{
-			//URL url = new URL();
 			URLResponse result = new URLResponse(clientRequest);
-			toWebServerSocket = new Socket(result.getURLString(), 80);
+			URL url = new URL(result.getURLString());
+			clientSocket.get
+			toWebServerSocket = new Socket(clientSocket.getInetAddress(), 80);
 			inFromServer = toWebServerSocket.getInputStream();
 			outToServer = toWebServerSocket.getOutputStream();
+			fileWriter = new FileOutputStream(new File(fileName));
+
 			outToServer.write(clientRequest);
 			outToServer.flush();
+			while(inFromServer.read(serverReply) != -1){
+				outToClient.write(serverReply, 0, inFromServer.read(serverReply));
+				outToClient.flush();
+				fileWriter.write(serverReply, 0, inFromServer.read(serverReply));
+				fileWriter.close();
+			}
+			server.putCache(clientSocket.getInetAddress().getHostAddress(), fileName);
+			fileWriter.close();
+			inFromServer.close();
+			outToServer.close();
+			toWebServerSocket.close();
 		}
 		catch (Exception ex)
 		{

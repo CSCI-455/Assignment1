@@ -25,7 +25,7 @@ public class ProxyServer {
 	String logFileName = "log.txt";
 
 	public static void main(String[] args) {
-		new ProxyServer().startServer(Integer.parseInt(args[0]));
+		new ProxyServer().startServer(2800);
 	}
 
 	void startServer(int proxyPort) {
@@ -37,16 +37,20 @@ public class ProxyServer {
 		if (!cacheDir.exists() || (cacheDir.exists() && !cacheDir.isDirectory())) {
 			cacheDir.mkdirs();
 		}
-		
-		while (true) {
-			try{
-				proxySocket = new ServerSocket(proxyPort);
-				RequestHandler request = new RequestHandler(proxySocket.accept(), this);
-				request.start();
+		try{
+			proxySocket = new ServerSocket(proxyPort);
+			while (true) {
+				try{
+					RequestHandler request = new RequestHandler(proxySocket.accept(), this);
+					request.start();
+				}
+				catch(IOException exp){
+					exp.printStackTrace();
+				}
 			}
-			catch(IOException exp){
-				exp.printStackTrace();
-			}
+		}
+		catch(IOException exp){
+			exp.printStackTrace();
 		}
 		
 		/**
